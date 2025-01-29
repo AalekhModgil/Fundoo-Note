@@ -22,6 +22,8 @@ Rails.application.routes.draw do
 
       delete "users/:id", to: "users#deleteUserById"
 
+      post "users/login", to: "users#userLogin"
+
     end
   end
 end
