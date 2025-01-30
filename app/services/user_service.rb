@@ -1,8 +1,6 @@
 
 class UserService
 
-  @@otp = nil
-
   def self.register_user(user_params)
     user = User.new(user_params)
     if user.save
@@ -23,6 +21,7 @@ class UserService
     user = User.find_by(email: forget_password_params[:email])
     if user 
       @@otp = rand(100000..999999)
+      UserMailer.otp_email(user,@@otp).deliver_now # Send OTP email
       return {success: true , otp: @@otp}
     else
       return {success: false}
@@ -38,10 +37,14 @@ class UserService
     if user
       user.update(password: reset_password_params[:new_password])
       @@otp = nil
+      UserMailer.password_reset_success_email(user).deliver_now # Send password reset success email
       return { success: true, message: "Password successfully reset" }
     else
       return { success: false, message: "User not found" }
     end
   end
+
+  private 
+  @@otp = nil
 
 end
