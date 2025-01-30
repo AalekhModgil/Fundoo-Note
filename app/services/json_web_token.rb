@@ -1,6 +1,7 @@
 require 'jwt'
 
 class JsonWebToken
+  
   SECRET_KEY = Rails.application.secret_key_base
 
   def self.encode(payload, exp = 24.hours.from_now)
@@ -14,4 +15,5 @@ class JsonWebToken
   rescue
     nil
   end
+
 end
