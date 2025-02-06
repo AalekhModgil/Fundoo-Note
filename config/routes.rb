@@ -9,6 +9,7 @@ Rails.application.routes.draw do
       post "notes/create", to: "notes#createNote"
       get "notes/getNote", to: "notes#getNote"
       get "notes/getNoteById/:id", to: "notes#getNoteById"
+      put "notes/trashToggle/:id", to: "notes#trashToggle"
     end
   end
 end
