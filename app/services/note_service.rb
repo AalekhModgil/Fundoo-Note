@@ -74,4 +74,15 @@ class NoteService
          { success: false, errors: "Couldn't toggle the archive status" }
       end
     end
+
+    def self.update_colour(note_id, colour)
+      note = Note.find_by(id: note_id)
+      if note
+        old_colour = note.colour
+        note.update(colour: colour)
+        { success: true, message: "Colour changed from #{old_colour} to #{colour} successfully" }
+      else
+        { success: false, errors: "Unable to change colour" }
+      end
+    end
 end
