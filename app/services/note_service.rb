@@ -60,4 +60,18 @@ class NoteService
          { success: false, errors: "Couldn't toggle the status" }
       end
     end
+
+    def self.archive_toggle(note_id)
+      note = Note.find_by(id: note_id)
+      if note
+        if note.is_archived == false
+          note.update(is_archived: true)
+        else
+          note.update(is_archived: false)
+        end
+         { success: true, message: "Archive status toggled" }
+      else
+         { success: false, errors: "Couldn't toggle the archive status" }
+      end
+    end
 end

@@ -10,6 +10,7 @@ Rails.application.routes.draw do
       get "notes/getNote", to: "notes#getNote"
       get "notes/getNoteById/:id", to: "notes#getNoteById"
       put "notes/trashToggle/:id", to: "notes#trashToggle"
+      put "notes/archiveToggle/:id", to: "notes#archiveToggle"
     end
   end
 end
