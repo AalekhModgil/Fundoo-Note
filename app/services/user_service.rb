@@ -1,50 +1,49 @@
 
 class UserService
-
   def self.register_user(user_params)
     user = User.new(user_params)
     if user.save
-      user
+      { success: true }
     else
-      nil
+      { success: false }
     end
   end
 
   def self.login_user(email, password)
     user = User.find_by(email: email)
-    raise StandardError , "Invalid email" if user.nil?
+    raise StandardError, "Invalid email" if user.nil?
     raise StandardError, "Invalid password" unless user&.authenticate(password)
     user
   end
 
   def self.forgetPassword(forget_password_params)
     user = User.find_by(email: forget_password_params[:email])
-    if user 
+    if user
       @@otp = rand(100000..999999)
-      UserMailer.otp_email(user,@@otp).deliver_now # Send OTP email
-      return {success: true , otp: @@otp}
+      @@otp_generated_at = Time.current
+      UserMailer.otp_email(user, @@otp).deliver_now # Send OTP email
+      { success: true, otp: @@otp }
     else
-      return {success: false}
+      { success: false }
     end
   end
 
   def self.resetPassword(user_id, reset_password_params)
-    if reset_password_params[:otp].to_i != @@otp
-      return { success: false, message: "Invalid OTP" }
+    if reset_password_params[:otp].to_i != @@otp || (Time.current - @@otp_generated_at > 1.minute)
+      { success: false, message: "Invalid OTP" }
     end
-  
     user = User.find_by(id: user_id)
     if user
       user.update(password: reset_password_params[:new_password])
       @@otp = nil
       UserMailer.password_reset_success_email(user).deliver_now # Send password reset success email
-      return { success: true, message: "Password successfully reset" }
+      { success: true, message: "Password successfully reset" }
     else
-      return { success: false, message: "User not found" }
+      { success: false, message: "User not found" }
     end
   end
 
-  private 
+  private
   @@otp = nil
-
+  @@otp_generated_at = nil
 end

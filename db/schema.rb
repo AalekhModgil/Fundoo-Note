@@ -10,9 +10,21 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_01_28_084455) do
+ActiveRecord::Schema[8.0].define(version: 2025_02_05_100738) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
+
+  create_table "notes", force: :cascade do |t|
+    t.string "title"
+    t.text "content"
+    t.bigint "user_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.boolean "is_deleted", default: false
+    t.boolean "is_archived", default: false
+    t.string "colour", default: "white"
+    t.index ["user_id"], name: "index_notes_on_user_id"
+  end
 
   create_table "users", force: :cascade do |t|
     t.string "name"
@@ -24,4 +36,6 @@ ActiveRecord::Schema[8.0].define(version: 2025_01_28_084455) do
     t.index ["email"], name: "index_users_on_email", unique: true
     t.index ["phone_number"], name: "index_users_on_phone_number", unique: true
   end
+
+  add_foreign_key "notes", "users"
 end

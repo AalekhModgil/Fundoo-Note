@@ -4,7 +4,9 @@ Rails.application.routes.draw do
       post "users", to: "users#userRegistration"
       post "users/login", to: "users#userLogin"
       put "users/forget", to: "users#forgetPassword"
-      put "users/reset/:id" , to: "users#resetPassword"
+      put "users/reset/:id", to: "users#resetPassword"
+
+      post "notes/create", to: "notes#createNote"
     end
   end
 end
