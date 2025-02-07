@@ -1,8 +1,16 @@
 class UserMailer < ApplicationMailer
   default from: "aalekhmodgil8@gmail.com"
 
-  # method for sending OTP email
+  def self.enqueue_otp_email(user, otp)
+    channel = RabbitMQ.create_channel
+    queue = channel.queue("otp_emails")
+    
+    message = { email: user.email, otp: otp }.to_json
+    queue.publish(message, persistent: true)
+  end
 
+  # method for sending OTP email
+ 
   def otp_email(user, otp)
     @user = user
     @otp = otp

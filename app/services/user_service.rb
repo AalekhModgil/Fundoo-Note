@@ -21,7 +21,10 @@ class UserService
     if user
       @@otp = rand(100000..999999)
       @@otp_generated_at = Time.current
-      UserMailer.otp_email(user, @@otp).deliver_now # Send OTP email
+      # UserMailer.otp_email(user, @@otp).deliver_now # Send OTP email
+      UserMailer.enqueue_otp_email(user, @@otp) # Send to RabbitMQ
+      # EmailWorker.start
+      Thread.new { EmailWorker.start }  # rails runner EmailWorker.start in terminal
       { success: true, otp: @@otp }
     else
       { success: false }
