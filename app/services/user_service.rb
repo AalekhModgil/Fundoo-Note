@@ -50,3 +50,8 @@ class UserService
   @@otp = nil
   @@otp_generated_at = nil
 end
+
+# User requests password reset → UserService generates OTP
+# UserService sends OTP message to the RabbitMQ queue
+# EmailWorker listens to the queue, picks up the OTP message
+# EmailWorker sends OTP email to the user
