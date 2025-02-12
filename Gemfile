@@ -71,3 +71,8 @@ group :test do
   gem "capybara"
   gem "selenium-webdriver"
 end
+
+gem "rswag-ui"
+gem "rswag-api"
+gem "rswag-specs", "~> 2.16.0"
+gem "rspec-rails"

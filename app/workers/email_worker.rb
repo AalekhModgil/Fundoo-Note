@@ -1,4 +1,4 @@
-require 'bunny'
+require "bunny"
 
 # This worker continuously listens for messages in the queue and processes them (sends emails).
 class EmailWorker

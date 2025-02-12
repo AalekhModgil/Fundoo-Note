@@ -1,0 +1,262 @@
+---
+openapi: 3.0.1
+info:
+  title: Fundoo Notes API
+  version: v1
+  description: API documentation for Fundoo Notes, including authentication and note
+    management.
+paths:
+  "/api/v1/notes/create":
+    post:
+      summary: Create a new note
+      tags:
+      - Notes
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: Authorization
+        in: header
+        description: Bearer Token
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Note created successfully
+        '401':
+          description: Unauthorized access
+        '422':
+          description: Invalid request
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                title:
+                  type: string
+                  example: New Note
+                content:
+                  type: string
+                  example: This is a new note
+              required:
+              - title
+              - content
+  "/api/v1/notes/getNote":
+    get:
+      summary: Retrieve all notes for the authenticated user
+      tags:
+      - Notes
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: Authorization
+        in: header
+        description: Bearer Token
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Notes retrieved successfully
+        '401':
+          description: Unauthorized access
+  "/api/v1/notes/getNoteById/{id}":
+    get:
+      summary: Retrieve a note by ID
+      tags:
+      - Notes
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Note retrieved successfully
+        '422':
+          description: Note not found or unauthorized
+  "/api/v1/notes/trashToggle/{id}":
+    put:
+      summary: Toggle Trash Status
+      tags:
+      - Notes
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Trash status toggled
+        '400':
+          description: Toggle failed
+  "/api/v1/notes/archiveToggle/{id}":
+    put:
+      summary: Toggle Archive Status
+      tags:
+      - Notes
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Archive status toggled
+        '400':
+          description: Archive toggle failed
+  "/api/v1/notes/updateColour/{id}/{colour}":
+    put:
+      summary: Update note colour
+      tags:
+      - Notes
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: colour
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Colour updated successfully
+        '400':
+          description: Colour update failed
+  "/api/v1/users":
+    post:
+      summary: Register a new user
+      tags:
+      - Users
+      parameters: []
+      responses:
+        '201':
+          description: User registered successfully
+        '422':
+          description: Invalid request
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                email:
+                  type: string
+                password:
+                  type: string
+                phone_number:
+                  type: string
+                  example: "+919876543210"
+              required:
+              - name
+              - email
+              - password
+              - phone_number
+  "/api/v1/users/login":
+    post:
+      summary: Login a user
+      tags:
+      - Users
+      parameters: []
+      responses:
+        '200':
+          description: Login successful
+        '400':
+          description: Invalid password
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                  example: person8@gmail.com
+                password:
+                  type: string
+                  example: Person8@1234
+              required:
+              - email
+              - password
+  "/api/v1/users/forget":
+    put:
+      summary: Forgot Password
+      tags:
+      - Users
+      parameters: []
+      responses:
+        '200':
+          description: OTP sent successfully
+        '404':
+          description: User not found
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                  example: asharma980511@gmail.com
+              required:
+              - email
+  "/api/v1/users/reset/{id}":
+    put:
+      summary: Reset Password
+      tags:
+      - Users
+      parameters:
+      - name: id
+        in: path
+        description: User ID
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Password reset successfully
+        '422':
+          description: Invalid OTP or User not found
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                otp:
+                  type: string
+                  example: '786344'
+                new_password:
+                  type: string
+                  example: AmanSharma@123
+              required:
+              - otp
+              - new_password
+servers:
+- url: http://localhost:3000
+  description: Local Development Server
+components:
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+security:
+- BearerAuth: []
