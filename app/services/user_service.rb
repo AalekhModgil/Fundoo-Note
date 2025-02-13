@@ -3,9 +3,9 @@ class UserService
   def self.register_user(user_params)
     user = User.new(user_params)
     if user.save
-      { success: true }
+      { success: true, message: "User created successfully" }
     else
-      { success: false }
+      { success: false, errors: user.errors.full_messages }
     end
   end
 
@@ -25,26 +25,26 @@ class UserService
       UserMailer.enqueue_otp_email(user, @@otp) # Send to RabbitMQ
       # EmailWorker.start
       Thread.new { EmailWorker.start }  # rails runner EmailWorker.start in terminal
-      { success: true, otp: @@otp }
+      { success: true, message: "OTP has been sent to #{user.email}, check your inbox", otp: @@otp, otp_generated_at: @@otp_generated_at }
     else
       { success: false }
     end
   end
 
   def self.resetPassword(user_id, reset_password_params)
-    if reset_password_params[:otp].to_i != @@otp || (Time.current - @@otp_generated_at > 1.minute)
-      { success: false, message: "Invalid OTP" }
-    end
     user = User.find_by(id: user_id)
-    if user
-      user.update(password: reset_password_params[:new_password])
-      @@otp = nil
-      UserMailer.password_reset_success_email(user).deliver_now # Send password reset success email
-      { success: true, message: "Password successfully reset" }
-    else
-      { success: false, message: "User not found" }
+    return { success: false, message: "User not found" } unless user
+
+    if reset_password_params[:otp].to_i != @@otp || (Time.current - @@otp_generated_at > 1.minute)
+      return { success: false, message: "Invalid OTP" }
     end
+
+    user.update(password: reset_password_params[:new_password])
+    @@otp = nil
+    UserMailer.password_reset_success_email(user).deliver_now
+    { success: true, message: "Password successfully reset" }
   end
+
 
   private
   @@otp = nil
