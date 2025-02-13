@@ -2,7 +2,7 @@ class NoteService
     def self.create_note(note_params, token)
      user_data = JsonWebToken.decode(token)
       unless user_data
-        return { success: false, error: "Unauthorized access" }, status: :unauthorized
+        return { success: false, error: "Unauthorized access" }
       end
       note =user_data.notes.new(note_params)
       if note.save
@@ -50,13 +50,11 @@ class NoteService
 
     def self.get_note_by_id(note_id, token)
       user_data = JsonWebToken.decode(token)
+      return { success: false, error: "Unauthorized access" } if user_data.nil?
+
       note = Note.find_by(id: note_id)
-      if note.nil?
-        { success: false, error: "Note not found" }
-      end
-      unless user_data
-          return { success: false, error: "Unauthorized access" }
-      end
+      return { success: false, error: "Note not found" } if note.nil?
+
       if user_data[:id] == note.user_id
         { success: true, note: note }
       else
