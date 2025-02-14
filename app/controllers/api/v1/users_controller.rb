@@ -13,17 +13,19 @@ class Api::V1::UsersController < ApplicationController
       end
 
       def userLogin
-        user = UserService.login_user(params[:email], params[:password])
-        if user
-          token = JsonWebToken.encode(user_id: user.id, name: user.name, email: user.email)
-          render json: { token: token, message: "Login successful", status: :ok }, status: :ok
-        else
-          render json: { error: "Invalid email or password", status: :unauthorized }, status: :unauthorized
+        if params[:email].blank? || params[:password].blank?
+          render json: { status: "error", message: "Missing email or password" }, status: :bad_request
+          return
         end
-      rescue StandardError => e
-        render json: { status: "error", message: e.message }, status: :bad_request
-      end
 
+        user = User.find_by(email: params[:email])
+        if user && user.authenticate(params[:password])
+          token = JsonWebToken.encode(user_id: user.id, name: user.name, email: user.email)
+          render json: { message: "Login successful", token: token }, status: :ok
+        else
+          render json: { error: "Invalid email or password" }, status: :unauthorized
+        end
+      end
 
       def forgetPassword
         response = UserService.forgetPassword(forget_password_params)
