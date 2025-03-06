@@ -21,16 +21,30 @@ class Api::V1::UsersController < ApplicationController
         user = User.find_by(email: params[:email])
         if user && user.authenticate(params[:password])
           token = JsonWebToken.encode(user_id: user.id, name: user.name, email: user.email)
-          render json: { message: "Login successful", token: token }, status: :ok
+          render json: { message: "Login successful", token: token,  user: { name: user.name, email: user.email }  }, status: :ok
         else
           render json: { error: "Invalid email or password" }, status: :unauthorized
         end
       end
 
+      # def forgetPassword
+      #   response = UserService.forgetPassword(forget_password_params)
+      #   if response[:success]
+      #     render json: { email: forget_password_params[:email], message: response[:message], otp: response[:otp] }, status: :ok
+      #   else
+      #     render json: { errors: "Email not registered" }, status: :not_found
+      #   end
+      # end
       def forgetPassword
         response = UserService.forgetPassword(forget_password_params)
         if response[:success]
-          render json: { email: forget_password_params[:email], message: response[:message], otp: response[:otp] }, status: :ok
+          user = User.find_by(email: forget_password_params[:email])
+          render json: {
+            email: forget_password_params[:email],
+            message: response[:message],
+            otp: response[:otp],
+            user_id: user.id
+          }, status: :ok
         else
           render json: { errors: "Email not registered" }, status: :not_found
         end

@@ -14,6 +14,8 @@ Rails.application.routes.draw do
       put "notes/trashToggle/:id", to: "notes#trashToggle"
       put "notes/archiveToggle/:id", to: "notes#archiveToggle"
       put "notes/updateColour/:id/:colour", to: "notes#updateColour"
+      put "notes/updateNote/:id", to: "notes#updateNote"
+      delete "notes/deleteNote/:id", to: "notes#deleteNote"
     end
   end
 end
